@@ -8,6 +8,10 @@ const pool = new Pool({
     }
 });
 
+const jwtCustomerPass = process.env.jwtCustomerPass;
+const  jwtShopPass= process.env.jwtShopPass;
+const jwtDeliveryPass=process.env.jwtDeliveryPass;
+
 // Test Database Connection
 pool.connect()
     .then(client => {
