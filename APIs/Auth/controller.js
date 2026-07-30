@@ -46,13 +46,30 @@ const register = async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, 12);
 
-    const result = await pool.query(
-      `INSERT INTO users (name, email, password_hash, role, phone, address, branch_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id, name, email, role, phone, address, branch_id, created_at`,
-      [name, email, password_hash, selectedRole, phone || null, address || null, branch_id || null]
-    );
+   const result = await pool.query(
+  `INSERT INTO users
+    (name, email, password_hash, role, phone, address, branch_id)
+   VALUES
+    ($1, $2, $3, $4, $5, $6, $7)
+   RETURNING
+    id,
+    name,
+    email,
+    role,
+    phone,
+    address,
+    branch_id,
+    created_at`,
+  [
+    name,
+    email,
+    password_hash,
+    selectedRole,
+    phone || null,
+    address || null,
+    branch_id || null
+  ]
+);
 
     const user  = result.rows[0];
     const token = signToken(user);

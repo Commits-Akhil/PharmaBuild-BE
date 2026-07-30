@@ -31,6 +31,10 @@ const pharmacistRoutes = require("./APIs/Pharmacist/routes");
 
 app.use('/medicines',require('./APIs/Medicines/routes'));
 
+app.use('/customer',require('./APIs/Customer/routes'));
+
+app.use('/placeorder',require('./APIs/placeorder/routes'));
+
 app.use("/pharmacist", pharmacistRoutes);
 
 app.use("/orders", orderRoutes);
