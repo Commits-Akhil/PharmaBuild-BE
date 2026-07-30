@@ -13,7 +13,7 @@ const signToken = (user) =>
 
 
 const register = async (req, res) => {
-  const { name, email, password, phone, address, branch_id } = req.body;
+  const { name, email, password,role, phone, address, branch_id } = req.body;
 
   try {
     const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
@@ -24,9 +24,9 @@ const register = async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO users (name, email, password_hash, role, phone, address, branch_id)
-       VALUES ($1, $2, $3, 'customer', $4, $5, $6)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING id, name, email, role, phone, address, branch_id, created_at`,
-      [name, email, password_hash, phone || null, address || null, branch_id || null]
+      [name, email, password_hash, role || null, phone || null, address || null, branch_id || null]
     );
 
     const user  = result.rows[0];
