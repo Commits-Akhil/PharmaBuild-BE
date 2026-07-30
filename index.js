@@ -29,6 +29,8 @@ const orderRoutes = require("./APIs/OrdercheckStock/routes");
 
 const pharmacistRoutes = require("./APIs/Pharmacist/routes");
 
+app.use('/medicines',require('./APIs/Medicines/routes'));
+
 app.use("/pharmacist", pharmacistRoutes);
 
 app.use("/orders", orderRoutes);
