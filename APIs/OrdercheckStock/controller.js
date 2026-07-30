@@ -11,8 +11,6 @@ const checkStock = async (req, res) => {
                 message: "Medicine list is required"
             });
         }
-
-        // Get medicine details
         const medicineIds = medicines.map(item => item.medicineId);
 
         const medicineResult = await pool.query(
@@ -33,15 +31,11 @@ const checkStock = async (req, res) => {
                 message: "One or more medicines not found"
             });
         }
-
-        // Prescription Check
         const prescriptionMedicines = medicineResult.rows.filter(
             med => med.is_prescription_required
         );
 
         const requiresPrescription = prescriptionMedicines.length > 0;
-
-        // Get all branches
         const branches = await pool.query(`
             SELECT id,name
             FROM branches
@@ -74,11 +68,8 @@ const checkStock = async (req, res) => {
                     break;
                 }
             }
-
             if (available) {
-
                 const availableMedicines = medicines.map(item => {
-
                     const med = medicineResult.rows.find(
                         m => m.id === item.medicineId
                     );
