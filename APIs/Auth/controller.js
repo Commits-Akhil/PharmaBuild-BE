@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
 require('dotenv').config();
 
-/** Signs a JWT containing the user's id, email, and role. */
+
 const signToken = (user) =>
   jwt.sign(
     { id: user.id, email: user.email, role: user.role },
@@ -11,12 +11,7 @@ const signToken = (user) =>
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 
-/**
- * POST /auth/register
- * Creates a new customer account.
- * Checks for duplicate email, hashes the password, inserts the user,
- * and returns a signed JWT along with the created user object.
- */
+
 const register = async (req, res) => {
   const { name, email, password, phone, address, branch_id } = req.body;
 
@@ -44,12 +39,7 @@ const register = async (req, res) => {
   }
 };
 
-/**
- * POST /auth/login
- * Authenticates a user by email and password.
- * Fetches the user, compares the bcrypt hash, and returns a JWT on success.
- * Password hash is never included in the response.
- */
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -78,11 +68,7 @@ const login = async (req, res) => {
   }
 };
 
-/**
- * GET /auth/profile
- * Returns the profile of the currently authenticated user.
- * Requires verifyToken middleware — reads user id from req.user.
- */
+
 const getProfile = async (req, res) => {
   try {
     const result = await pool.query(

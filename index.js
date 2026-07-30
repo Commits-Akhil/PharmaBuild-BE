@@ -24,7 +24,7 @@ app.use(express.json());
 // process.on("unhandledRejection", (err) => {
 //     console.error("Unhandled Rejection:", err);
 // });
-
+app.use('/auth',require('./APIs/Auth/routes'));
 const orderRoutes = require("./APIs/OrdercheckStock/routes");
 
 const pharmacistRoutes = require("./APIs/Pharmacist/routes");
