@@ -1,6 +1,5 @@
 const pool = require("../../config");
 
-
 const placeOrder = async (req, res) => {
 
     const { branchId, requiresPrescription, items } = req.body;
