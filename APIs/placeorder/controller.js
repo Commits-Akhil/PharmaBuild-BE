@@ -1,5 +1,13 @@
 const pool = require("../../config");
 
+/**
+ * POST /orders/place
+ * Places an order by calling the PostgreSQL stored function place_order().
+ * The function atomically creates the order, deducts stock from the branch,
+ * and creates order_items records — if stock is insufficient the whole
+ * transaction rolls back and FAILED is returned.
+ * The customer ID is always taken from the JWT (req.user.id), never from the body.
+ */
 const placeOrder = async (req, res) => {
 
     const { branchId, requiresPrescription, items } = req.body;
