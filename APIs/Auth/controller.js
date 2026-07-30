@@ -11,13 +11,8 @@ const signToken = (user) =>
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 
-/**
- * POST /auth/register
- * Creates a new user account with a chosen role.
- * - Customers: no secret required.
- * - Admin / Pharmacist: must provide a matching `role_secret` that is
- *   validated against ADMIN_SECRET or PHARMACIST_SECRET in the environment.
- */
+/// POST /auth/register
+
 const register = async (req, res) => {
   const { name, email, password, phone, address, branch_id, role, role_secret } = req.body;
 
@@ -81,12 +76,8 @@ const register = async (req, res) => {
   }
 };
 
-/**
- * POST /auth/login
- * Authenticates a user by email and password.
- * Fetches the user, compares the bcrypt hash, and returns a JWT on success.
- * Password hash is never included in the response.
- */
+// POST /auth/login
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -115,11 +106,8 @@ const login = async (req, res) => {
   }
 };
 
-/**
- * GET /auth/profile
- * Returns the profile of the currently authenticated user.
- * Requires verifyToken middleware — reads user id from req.user.
- */
+// GET /auth/profile
+
 const getProfile = async (req, res) => {
   try {
     const result = await pool.query(

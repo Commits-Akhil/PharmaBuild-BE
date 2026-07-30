@@ -1,10 +1,5 @@
 const pool = require('../../config');
 
-/**
- * GET /admin/users
- * Returns all registered users sorted by registration date (newest first).
- * Password hashes are never selected.
- */
 const getAllUsers = async (req, res) => {
   try {
     const result = await pool.query(
@@ -17,13 +12,9 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-/**
- * GET /admin/branches
- * Returns all branches along with their full stock inventory.
- * Each medicine entry includes a computed stock_status:
- *   "Out of Stock" | "Low Stock" | "In Stock"
- * Stock rows are grouped under each branch in the response.
- */
+
+ ///GET /admin/branches
+
 const getAllBranches = async (req, res) => {
   try {
     const branchRes = await pool.query(`SELECT id, name, location, created_at FROM branches ORDER BY id`);
@@ -60,12 +51,8 @@ const getAllBranches = async (req, res) => {
   }
 };
 
-/**
- * GET /admin/orders
- * Returns all orders across all customers and branches, newest first.
- * Each row includes customer info, branch info, and prescription details
- * (via LEFT JOIN, so orders without prescriptions are still included).
- */
+// GET /admin/orders
+
 const getAllOrders = async (req, res) => {
   try {
     const result = await pool.query(
@@ -100,11 +87,8 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-/**
- * GET /admin/branches/:branchId/today-orders
- * Returns all orders placed today for a specific branch, including customer details,
- * prescription details, and order items.
- */
+// GET /admin/branches/:branchId/today-orders
+
 const getBranchTodayOrders = async (req, res) => {
   const { branchId } = req.params;
 
@@ -190,11 +174,8 @@ const getBranchTodayOrders = async (req, res) => {
   }
 };
 
-/**
- * GET /admin/branches/low-stock
- * Returns stock items that are running low (quantity_available <= low_stock_threshold)
- * grouped across all branches.
- */
+// GET /admin/branches/low-stock
+
 const getLowStockByBranch = async (req, res) => {
   try {
     const result = await pool.query(
@@ -253,11 +234,8 @@ const getLowStockByBranch = async (req, res) => {
   }
 };
 
-/**
- * GET /admin/branches/fulfillment-failures
- * Analyzes order status and stock metrics per branch to show which branches are failing
- * to fulfill orders (e.g. high rejection counts/failure rate and out of stock items).
- */
+// GET /admin/branches/fulfillment-failures
+
 const getFulfillmentFailures = async (req, res) => {
   try {
     const result = await pool.query(

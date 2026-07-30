@@ -1,13 +1,8 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-/**
- * verifyToken middleware
- * Reads the Bearer token from the Authorization header, verifies it
- * against JWT_SECRET, and attaches the decoded payload { id, email, role }
- * to req.user so downstream handlers can access the caller's identity.
- * Returns 401 if the header is missing or the token is invalid/expired.
- */
+
+
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 
