@@ -1,9 +1,9 @@
-const pool   = require('../../config');
+const pool = require('../../config');
 const bcrypt = require('bcryptjs');
-const jwt    = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-
+/** Signs a JWT containing the user's id, email, and role. */
 const signToken = (user) =>
   jwt.sign(
     { id: user.id, email: user.email, role: user.role },
@@ -11,9 +11,33 @@ const signToken = (user) =>
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 
-
+/**
+ * POST /auth/register
+ * Creates a new user account with a chosen role.
+ * - Customers: no secret required.
+ * - Admin / Pharmacist: must provide a matching `role_secret` that is
+ *   validated against ADMIN_SECRET or PHARMACIST_SECRET in the environment.
+ */
 const register = async (req, res) => {
-  const { name, email, password, phone, address, branch_id } = req.body;
+  const { name, email, password, phone, address, branch_id, role, role_secret } = req.body;
+
+  // Validate role value
+  const allowedRoles = ['customer', 'admin', 'pharmacist'];
+  const selectedRole = (role || 'customer').toLowerCase();
+
+  if (!allowedRoles.includes(selectedRole))
+    return res.status(400).json({ success: false, message: 'Invalid role selected.' });
+
+  // For admin/pharmacist, verify the role secret before proceeding
+  if (selectedRole === 'admin') {
+    if (!role_secret || role_secret !== process.env.ADMIN_SECRET)
+      return res.status(403).json({ success: false, message: 'Invalid admin registration secret.' });
+  }
+
+  if (selectedRole === 'pharmacist') {
+    if (!role_secret || role_secret !== process.env.PHARMACIST_SECRET)
+      return res.status(403).json({ success: false, message: 'Invalid pharmacist registration secret.' });
+  }
 
   try {
     const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
@@ -24,9 +48,9 @@ const register = async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO users (name, email, password_hash, role, phone, address, branch_id)
-       VALUES ($1, $2, $3, 'customer', $4, $5, $6)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING id, name, email, role, phone, address, branch_id, created_at`,
-      [name, email, password_hash, phone || null, address || null, branch_id || null]
+      [name, email, password_hash, selectedRole, phone || null, address || null, branch_id || null]
     );
 
     const user  = result.rows[0];
@@ -39,7 +63,12 @@ const register = async (req, res) => {
   }
 };
 
-
+/**
+ * POST /auth/login
+ * Authenticates a user by email and password.
+ * Fetches the user, compares the bcrypt hash, and returns a JWT on success.
+ * Password hash is never included in the response.
+ */
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -52,7 +81,7 @@ const login = async (req, res) => {
     if (result.rows.length === 0)
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
 
-    const user    = result.rows[0];
+    const user = result.rows[0];
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch)
@@ -68,7 +97,11 @@ const login = async (req, res) => {
   }
 };
 
-
+/**
+ * GET /auth/profile
+ * Returns the profile of the currently authenticated user.
+ * Requires verifyToken middleware — reads user id from req.user.
+ */
 const getProfile = async (req, res) => {
   try {
     const result = await pool.query(
