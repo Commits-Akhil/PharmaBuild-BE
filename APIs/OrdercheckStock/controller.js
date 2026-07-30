@@ -2,15 +2,17 @@ const pool = require("../../config");
 
 const checkStock = async (req, res) => {
     try {
-
         const { medicines } = req.body;
 
-        if (!medicines || medicines.length === 0) {
+      
+        if (!Array.isArray(medicines) || medicines.length === 0) {
             return res.status(400).json({
                 success: false,
                 message: "Medicine list is required"
             });
         }
+
+        
         const medicineIds = medicines.map(item => item.medicineId);
 
         const medicineResult = await pool.query(
@@ -31,52 +33,76 @@ const checkStock = async (req, res) => {
                 message: "One or more medicines not found"
             });
         }
+
+        const medicineMap = new Map();
+
+        medicineResult.rows.forEach(medicine => {
+            medicineMap.set(medicine.id, medicine);
+        });
+
         const prescriptionMedicines = medicineResult.rows.filter(
-            med => med.is_prescription_required
+            medicine => medicine.is_prescription_required
         );
 
         const requiresPrescription = prescriptionMedicines.length > 0;
-        const branches = await pool.query(`
-            SELECT id,name
+
+        const branchResult = await pool.query(`
+            SELECT
+                id,
+                name
             FROM branches
             ORDER BY id
         `);
 
+        const stockResult = await pool.query(
+            `
+            SELECT
+                branch_id,
+                medicine_id,
+                quantity_available
+            FROM branch_stock
+            WHERE medicine_id = ANY($1)
+            `,
+            [medicineIds]
+        );
+
+   
+        const stockMap = new Map();
+
+        stockResult.rows.forEach(stock => {
+            stockMap.set(
+                `${stock.branch_id}-${stock.medicine_id}`,
+                stock.quantity_available
+            );
+        });
+
         const eligibleBranches = [];
 
-        for (const branch of branches.rows) {
+
+        for (const branch of branchResult.rows) {
 
             let available = true;
 
             for (const item of medicines) {
 
-                const stock = await pool.query(
-                    `
-                    SELECT quantity_available
-                    FROM branch_stock
-                    WHERE branch_id=$1
-                    AND medicine_id=$2
-                    `,
-                    [branch.id, item.medicineId]
-                );
+                const availableQuantity =
+                    stockMap.get(`${branch.id}-${item.medicineId}`) ?? 0;
 
-                if (
-                    stock.rowCount === 0 ||
-                    stock.rows[0].quantity_available < item.quantity
-                ) {
+                if (availableQuantity < item.quantity) {
                     available = false;
                     break;
                 }
             }
+
             if (available) {
+
                 const availableMedicines = medicines.map(item => {
-                    const med = medicineResult.rows.find(
-                        m => m.id === item.medicineId
-                    );
+
+                    const medicine = medicineMap.get(item.medicineId);
 
                     return {
                         medicineId: item.medicineId,
-                        medicineName: med.name,
+                        medicineName: medicine.name,
                         requestedQuantity: item.quantity
                     };
 
@@ -99,7 +125,7 @@ const checkStock = async (req, res) => {
 
     } catch (err) {
 
-        console.error(err);
+        console.error("Check Stock Error:", err);
 
         return res.status(500).json({
             success: false,

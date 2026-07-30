@@ -5,11 +5,11 @@ const controller = require("./controller");
 
 
 
-// const verifyToken = require("../../AuthHandler/verifyToken");
-// const authorizeRoles = require("../../AuthHandler/authorizeRoles");
+const verifyToken = require("../../AuthHandler/verifyToken");
+const authorizeRoles = require("../../AuthHandler/authorizeRoles");
 
 // Protect all admin routes
-// router.use(verifyToken, authorizeRoles("admin"));
+router.use(verifyToken, authorizeRoles("admin"));
 
 router.get("/users", controller.getAllUsers);
 
