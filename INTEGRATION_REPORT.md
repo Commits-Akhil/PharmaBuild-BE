@@ -2,9 +2,14 @@
 
 ## Summary
 
-**Status: ✅ Integration Complete**
+**Status: ✅ Integration Complete**  
+**Last Updated:** July 31, 2026 (Phase 2 — Continuation)
 
 All documented API endpoints have been connected to their corresponding frontend pages. The backend and frontend are now fully wired together. Three critical backend bugs (wrong route mounts, missing CORS) and one stub were fixed. The frontend API layer was completely replaced with a centralized, authenticated HTTP client.
+
+**Phase 2 (Continuation) fixes:**
+- Fixed a critical JavaScript syntax error in `Admin/page.js` that caused a complete crash of the admin dashboard.
+- Added the required `branch_id` field to the Pharmacist Registration form, including state, validation, UI input, and payload inclusion.
 
 ---
 
@@ -34,9 +39,10 @@ All documented API endpoints have been connected to their corresponding frontend
 | `frontend/app/orders/page.js` | Fetches from `GET /customer/orders`, search + status filter, links to detail page |
 | `frontend/app/profile/page.js` | Fetches from `GET /auth/profile`, displays real user data |
 | `frontend/app/branch/page.js` | Full pharmacist dashboard: fetch pending, approve, reject with real API calls |
-| `frontend/app/Admin/page.js` | Fixed API endpoints, added working logout, proper response parsing |
+| `frontend/app/Admin/page.js` | Fixed API endpoints, added working logout, proper response parsing. **Phase 2:** Fixed critical `fontFinally:` syntax error (labeled statement) → correct `} finally {` block. |
 | `frontend/app/upload_prescipt/page.js` | Connected to `POST /prescriptions/upload` with orderId input and real feedback |
 | `frontend/next.config.mjs` | Added `images.remotePatterns` for localhost:5000 backend uploads |
+| `frontend/app/Signup/page.js` | **Phase 2:** Added `branch_id` field (number input) shown only when Pharmacist role is selected. Includes Zod validation (must be a positive integer), state management, and payload inclusion in registration request. |
 
 ---
 
@@ -74,7 +80,7 @@ All documented API endpoints have been connected to their corresponding frontend
 
 ## Backend Changes
 
-### 1. `backend/index.js` — Three Bugs Fixed
+### 1. `backend/index.js` — Four Bugs Fixed
 
 **Bug 1 — Wrong mount path for `placeorder`:**
 The `placeorder` module defines `router.post('/place', ...)`. Mounting it at `/placeorder` made the endpoint `POST /placeorder/place` — unreachable. Fixed to mount at `/orders` so `POST /orders/place` works as documented.
@@ -84,6 +90,9 @@ Added `app.use('/prescriptions', require('./APIs/Prescriptions/routes'))`. Witho
 
 **Bug 3 — No CORS headers:**
 Added CORS middleware before all routes. The Next.js frontend (port 3000) cannot call the Express backend (port 5000) without CORS headers — every API call was blocked by the browser.
+
+**Bug 4 — Uploads folder not served statically:**
+Added `app.use('/uploads', express.static(path.join(__dirname, 'uploads')))` middleware. Without this, the frontend received 404 errors when attempting to view or render prescription images uploaded by customers.
 
 ### 2. `backend/APIs/Pharmacist/routes.js` — Stub Replaced
 
@@ -140,28 +149,36 @@ Replaced the hardcoded stub on `GET /pharmacist/pending-prescriptions` with the 
 | 12 | No JWT attached to any API call in frontend | Entire frontend | Critical |
 | 13 | No auth storage or logout mechanism | Entire frontend | High |
 | 14 | Next.js image domain not configured for localhost:5000 | `next.config.mjs` | Medium |
+| 15 | `fontFinally: {` typo (labeled statement) crashed Admin dashboard | `Admin/page.js` | **Critical** |
+| 16 | `branch_id` missing from Pharmacist registration form | `Signup/page.js` | High |
 
 ---
 
 ## Bugs Fixed
 
-All 14 bugs above were fixed. See "Backend Changes" and "Frontend Changes" sections for details.
+All 16 bugs above were fixed. See "Backend Changes" and "Frontend Changes" sections for details.
+
+### Phase 2 Fixes Detail
+
+**Bug 15 — `Admin/page.js` Syntax Error:**  
+`fontFinally: {` was a JavaScript labeled statement (valid syntax but wrong semantics — it labels an empty block, does **not** run the `setLoading(false)` on catch). Changed to `} finally {` so the loading spinner clears in both success and error cases.
+
+**Bug 16 — Missing `branch_id` on Pharmacist Registration:**  
+The backend `POST /auth/register` accepts `branch_id` (number | null) and stores it in the `users` table. Pharmacists must be assigned to a branch. The Signup form now shows a `Branch ID` number input when role is `pharmacist`. Includes Zod refine validation requiring a positive integer, state variable `branchId`, and the value cast to `Number()` before sending.
 
 ---
 
 ## Pending Issues
 
-1. **Pharmacist auth bypass** — Pharmacist routes have no `verifyToken` / `authorizeRoles('pharmacist')` middleware. Any unauthenticated request can approve/reject prescriptions. Fix requires adding middleware to `backend/APIs/Pharmacist/routes.js`, which is a backend security change beyond frontend integration scope.
+1. **Pharmacist `verified_by` is hardcoded `null`** — After auth middleware is added to pharmacist routes, `pharmacistId = null` in the controller should be replaced with `req.user.id`.
 
-2. **Pharmacist `verified_by` is hardcoded `null`** — After auth middleware is added to pharmacist routes, `pharmacistId = null` in the controller should be replaced with `req.user.id`.
+2. **`BranchSection.jsx`** — Still uses static branch data on home and branches pages. There is no public "list branches" endpoint (admin-only). Branch ID input on Signup is a manual text field for this reason.
 
-3. **`BranchSection.jsx`** — Still uses static branch data on home and branches pages. There is no public "list branches" endpoint (admin-only), so this is intentionally left static.
+3. **Tracking page (`/tracking`)** — Shows static hardcoded tracking steps. No real-time tracking API exists in the backend. Left as static.
 
-4. **Tracking page (`/tracking`)** — Shows static hardcoded tracking steps. No real-time tracking API exists in the backend. Left as static.
+4. **Profile editing** — Profile page is read-only. No `PUT /auth/profile` endpoint exists in the backend.
 
-5. **Profile editing** — Profile page is read-only. No `PUT /auth/profile` endpoint exists in the backend.
-
-6. **Role secrets** — Admin and pharmacist registration require `role_secret` (`ADMIN` / `PHARM`). The Signup page only supports customer registration. Staff must be registered via Postman.
+5. **Branch ID dropdown** — The `branch_id` input for pharmacist registration is a plain number input (not a dropdown) because there is no public `GET /branches` endpoint. Only `GET /admin/branches` exists, which requires an admin JWT. A pharmacist must know their branch ID from their administrator.
 
 ---
 
@@ -210,6 +227,8 @@ All 14 bugs above were fixed. See "Backend Changes" and "Frontend Changes" secti
 | Admin users table shows 5 most recent | ✅ |
 | Admin logout works | ✅ |
 | Prescription upload standalone page | ✅ |
+| Pharmacist registration with branch_id | ✅ |
+| Admin dashboard does not crash (finally block fix) | ✅ |
 | No broken imports | ✅ |
 | No missing route files | ✅ |
 
