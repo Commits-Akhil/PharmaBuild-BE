@@ -1,39 +1,36 @@
 const express = require("express");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
 
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URL || "http://localhost:3000");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") return res.sendStatus(200);
+  next();
+});
+
+// Serve uploaded prescription images statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use(express.json());
 
-// process.on("exit", (code) => {
-//     console.log("Process exited with code:", code);
-// });
+app.use('/auth', require('./APIs/Auth/routes'));
 
-// process.on("SIGINT", () => {
-//     console.log("SIGINT received");
-// });
-
-// process.on("SIGTERM", () => {
-//     console.log("SIGTERM received");
-// });
-
-// process.on("uncaughtException", (err) => {
-//     console.error("Uncaught Exception:", err);
-// });
-
-// process.on("unhandledRejection", (err) => {
-//     console.error("Unhandled Rejection:", err);
-// });
-app.use('/auth',require('./APIs/Auth/routes'));
 const orderRoutes = require("./APIs/OrdercheckStock/routes");
-
 const pharmacistRoutes = require("./APIs/Pharmacist/routes");
 
-app.use('/medicines',require('./APIs/Medicines/routes'));
+app.use('/medicines', require('./APIs/Medicines/routes'));
 
-app.use('/customer',require('./APIs/Customer/routes'));
+app.use('/customer', require('./APIs/Customer/routes'));
 
-app.use('/placeorder',require('./APIs/placeorder/routes'));
+app.use('/orders', require('./APIs/placeorder/routes'));
+
+
+app.use('/prescriptions', require('./APIs/Prescriptions/routes'));
 
 app.use("/pharmacist", pharmacistRoutes);
 
