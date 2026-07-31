@@ -17,12 +17,12 @@ function OrderSummary({ cart, onCheckout, loading }) {
   );
 
   return (
-    <div className="bg-[#161F33] rounded-[30px] p-8 h-fit border border-white/10 shadow-xl">
-      <h2 className="text-3xl font-bold text-white">Order Summary</h2>
-      <hr className="my-6 border-white/10" />
-      <div className="space-y-4">
+    <div className="bg-[#161F33] rounded-[24px] sm:rounded-[30px] p-5 sm:p-8 h-fit border border-white/10 shadow-xl">
+      <h2 className="text-2xl sm:text-3xl font-bold text-white">Order Summary</h2>
+      <hr className="my-4 sm:my-6 border-white/10" />
+      <div className="space-y-3 sm:space-y-4">
         {cart.map((item) => (
-          <div key={item.medicineId} className="flex justify-between text-sm">
+          <div key={item.medicineId} className="flex justify-between text-xs sm:text-sm">
             <span className="text-gray-300">
               {item.name} × {item.quantity}
             </span>
@@ -31,22 +31,22 @@ function OrderSummary({ cart, onCheckout, loading }) {
             </span>
           </div>
         ))}
-        <div className="flex justify-between text-base pt-2 border-t border-white/5">
+        <div className="flex justify-between text-xs sm:text-sm pt-2 border-t border-white/5">
           <span className="text-gray-300">Express Branch Delivery:</span>
           <span className="text-emerald-400 font-semibold">FREE</span>
         </div>
       </div>
-      <hr className="my-6 border-white/10" />
+      <hr className="my-4 sm:my-6 border-white/10" />
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Total Amount:</h2>
-        <h2 className="text-3xl font-extrabold text-emerald-400">
+        <h2 className="text-lg sm:text-2xl font-bold text-white">Total Amount:</h2>
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
           ₹{total.toFixed(2)}
         </h2>
       </div>
       <button
         onClick={onCheckout}
         disabled={loading || cart.length === 0}
-        className="mt-8 w-full bg-emerald-600 hover:bg-emerald-500 transition py-4 rounded-2xl text-white text-lg font-bold disabled:opacity-60 shadow-lg shadow-emerald-900/40"
+        className="mt-6 sm:mt-8 w-full bg-emerald-600 hover:bg-emerald-500 transition py-3.5 sm:py-4 rounded-xl sm:rounded-2xl text-white text-base sm:text-lg font-bold disabled:opacity-60 shadow-lg shadow-emerald-900/40"
       >
         {loading ? "Checking Stock..." : "Proceed to Branch Selection →"}
       </button>
@@ -71,16 +71,16 @@ function BranchModal({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#161F33] w-full max-w-xl rounded-[32px] p-8 border border-white/10 relative shadow-2xl">
+      <div className="bg-[#161F33] w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 border border-white/10 relative shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 text-gray-400 hover:text-white bg-black/40 p-2 rounded-full"
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-400 hover:text-white bg-black/40 p-2 rounded-full"
         >
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2 mb-2">
-          <Building2 className="text-emerald-400" />
+        <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 mb-2 pr-8">
+          <Building2 className="text-emerald-400 shrink-0" size={22} />
           Fulfillment Branch Selection
         </h2>
         <p className="text-gray-400 text-xs mb-6">
@@ -88,7 +88,7 @@ function BranchModal({
         </p>
 
         {branches.length === 0 ? (
-          <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-6 text-center text-rose-300">
+          <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-5 text-center text-rose-300 text-sm">
             No branches currently have all requested items in stock. Please reduce item quantities or modify your cart.
           </div>
         ) : (
@@ -97,7 +97,7 @@ function BranchModal({
               Available Branch Locations ({branches.length})
             </label>
             <select
-              className="w-full bg-[#0D1527] border border-gray-700 rounded-2xl p-4 text-white outline-none focus:border-emerald-500 mb-6 font-medium"
+              className="w-full bg-[#0D1527] border border-gray-700 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-white outline-none focus:border-emerald-500 mb-6 font-medium text-xs sm:text-sm"
               value={selectedBranch ?? ""}
               onChange={(e) => setSelectedBranch(Number(e.target.value))}
             >
@@ -109,7 +109,7 @@ function BranchModal({
             </select>
 
             {requiresPrescription && (
-              <div className="mb-6 bg-amber-500/10 border border-amber-500/30 p-5 rounded-2xl">
+              <div className="mb-6 bg-amber-500/10 border border-amber-500/30 p-4 sm:p-5 rounded-2xl">
                 <p className="text-amber-300 text-xs font-semibold flex items-center gap-2 mb-3">
                   ⚠️ Doctor Prescription Required for one or more medicines in your cart.
                 </p>
@@ -120,13 +120,13 @@ function BranchModal({
                   type="file"
                   accept=".jpg,.jpeg,.png,.webp,.gif"
                   onChange={(e) => setPrescFile(e.target.files[0])}
-                  className="text-white text-xs file:bg-emerald-600 file:border-0 file:rounded-xl file:px-4 file:py-2 file:text-white file:font-semibold hover:file:bg-emerald-500 cursor-pointer"
+                  className="text-white text-xs file:bg-emerald-600 file:border-0 file:rounded-xl file:px-3 file:py-1.5 file:text-white file:font-semibold hover:file:bg-emerald-500 cursor-pointer w-full"
                 />
               </div>
             )}
 
             {error && (
-              <div className="text-rose-400 text-sm mb-4 bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl">
+              <div className="text-rose-400 text-xs sm:text-sm mb-4 bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl">
                 {error}
               </div>
             )}
@@ -134,9 +134,9 @@ function BranchModal({
             <button
               onClick={() => onPlace(selectedBranch)}
               disabled={loading || !selectedBranch}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl text-white font-bold flex justify-center items-center gap-2 disabled:opacity-60 transition shadow-lg shadow-emerald-900/40"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl text-white font-bold flex justify-center items-center gap-2 disabled:opacity-60 transition shadow-lg shadow-emerald-900/40 text-sm sm:text-base"
             >
-              <ShieldCheck size={20} />
+              <ShieldCheck size={18} />
               {loading ? "Placing Order..." : "Confirm & Place Order"}
             </button>
           </>
@@ -168,7 +168,6 @@ export default function CartPage() {
         quantity: item.quantity,
       }));
       const res = await api.post("/orders/check-stock", { medicines });
-      // Backend returns flat: { prescriptionRequired, availableBranches } — NOT nested under .data
       const rxRequired = res.data.prescriptionRequired ?? false;
       const branches = res.data.availableBranches ?? [];
       setRequiresPrescription(rxRequired);
@@ -197,10 +196,8 @@ export default function CartPage() {
         items,
       });
 
-      // Backend returns flat: { success, orderId, message, nextStep } — NOT nested under .data
       const orderId = orderRes.data.orderId ?? orderRes.data.data?.orderId;
 
-      // Upload prescription if required and file selected
       if (requiresPrescription && prescFile) {
         const formData = new FormData();
         formData.append("orderId", String(orderId));
@@ -239,40 +236,40 @@ export default function CartPage() {
 
       <Header />
 
-      <div className="bg-[#0B1220] min-h-screen px-6 py-8">
+      <div className="bg-[#0B1220] min-h-screen px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="max-w-7xl mx-auto">
-          <section className="bg-gradient-to-r from-emerald-800 to-[#1A2341] rounded-[30px] p-8 md:p-10 border border-white/10">
-            <h1 className="text-4xl md:text-5xl font-bold text-white">
+          <section className="bg-gradient-to-r from-emerald-800 to-[#1A2341] rounded-[24px] sm:rounded-[30px] p-6 sm:p-8 md:p-10 border border-white/10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
               Shopping Cart & Checkout
             </h1>
-            <p className="text-gray-300 mt-2">
+            <p className="text-gray-300 mt-2 text-sm sm:text-base">
               Review your selected medicines and check branch stock availability.
             </p>
           </section>
 
           {cart.length === 0 ? (
-            <div className="bg-[#161F33] rounded-[30px] p-16 text-center border border-white/10 mt-10">
-              <span className="text-6xl mb-4 block">🛒</span>
-              <p className="text-gray-300 text-xl font-medium mb-4">
+            <div className="bg-[#161F33] rounded-[24px] sm:rounded-[30px] p-10 sm:p-16 text-center border border-white/10 mt-8 sm:mt-10">
+              <span className="text-5xl sm:text-6xl mb-4 block">🛒</span>
+              <p className="text-gray-300 text-lg sm:text-xl font-medium mb-4">
                 Your shopping cart is empty.
               </p>
               <a
                 href="/medicines"
-                className="inline-block bg-emerald-600 hover:bg-emerald-500 transition text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-emerald-900/40"
+                className="inline-block bg-emerald-600 hover:bg-emerald-500 transition text-white px-6 sm:px-8 py-3.5 rounded-xl sm:rounded-2xl font-bold text-sm shadow-lg shadow-emerald-900/40"
               >
                 Browse Medicines Catalog
               </a>
             </div>
           ) : (
-            <div className="grid lg:grid-cols-[1.45fr_1fr] gap-8 mt-10">
-              <div className="bg-[#161F33] rounded-[30px] overflow-hidden border border-white/10 shadow-xl">
+            <div className="grid lg:grid-cols-[1.45fr_1fr] gap-6 lg:gap-8 mt-8 sm:mt-10">
+              <div className="bg-[#161F33] rounded-[24px] sm:rounded-[30px] overflow-hidden border border-white/10 shadow-xl">
                 {cart.map((item) => (
                   <div
                     key={item.medicineId}
-                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 border-b border-white/10 gap-4"
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-6 border-b border-white/10 gap-4"
                   >
                     <div>
-                      <h3 className="text-white text-xl font-bold max-w-sm">
+                      <h3 className="text-white text-lg sm:text-xl font-bold max-w-sm">
                         {item.name}
                       </h3>
                       <p className="text-xs text-gray-400 mt-1">
@@ -283,14 +280,14 @@ export default function CartPage() {
                         )}
                       </p>
                       {item.price && (
-                        <p className="text-emerald-400 mt-2 font-bold text-lg">
+                        <p className="text-emerald-400 mt-1.5 font-bold text-base sm:text-lg">
                           ₹{item.price} / unit
                         </p>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-6 self-end sm:self-center">
-                      <div className="flex items-center bg-[#0D1527] border border-white/10 rounded-2xl px-3 py-1.5 gap-4">
+                    <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-3 sm:pt-0 border-white/5">
+                      <div className="flex items-center bg-[#0D1527] border border-white/10 rounded-2xl px-3 py-1.5 gap-3 sm:gap-4">
                         <button
                           onClick={() => {
                             if (item.quantity === 1) {
@@ -300,7 +297,7 @@ export default function CartPage() {
                           }}
                           className="text-gray-400 hover:text-white p-1"
                         >
-                          <Minus size={16} />
+                          <Minus size={14} />
                         </button>
                         <span className="text-white font-bold text-sm">
                           {item.quantity}
@@ -311,7 +308,7 @@ export default function CartPage() {
                           }
                           className="text-gray-400 hover:text-white p-1"
                         >
-                          <Plus size={16} />
+                          <Plus size={14} />
                         </button>
                       </div>
 
@@ -343,3 +340,4 @@ export default function CartPage() {
     </>
   );
 }
+

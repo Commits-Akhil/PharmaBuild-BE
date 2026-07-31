@@ -46,18 +46,18 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="bg-[#0B1220] min-h-screen px-6 py-8">
+      <div className="bg-[#0B1220] min-h-screen px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-[#161F33] rounded-[30px] p-8 border border-white/10">
+          <div className="bg-[#161F33] rounded-[24px] sm:rounded-[30px] p-5 sm:p-8 border border-white/10 shadow-xl">
 
-            <h2 className="text-3xl font-semibold text-white flex items-center gap-3">
-              <Upload className="text-blue-500" />
+            <h2 className="text-xl sm:text-3xl font-semibold text-white flex items-center gap-2.5 sm:gap-3">
+              <Upload className="text-blue-500 shrink-0" size={24} />
               Upload Prescription Document
             </h2>
 
             {/* Order ID input */}
-            <div className="mt-8">
-              <label className="text-white block mb-3 font-medium">
+            <div className="mt-6 sm:mt-8">
+              <label className="text-white block mb-2 sm:mb-3 text-xs sm:text-sm font-medium">
                 Order ID
               </label>
               <input
@@ -65,41 +65,41 @@ export default function Page() {
                 placeholder="Enter your Order ID"
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value)}
-                className="w-full bg-[#111B2F] border border-gray-700 rounded-xl p-4 text-white outline-none focus:border-blue-500"
+                className="w-full bg-[#111B2F] border border-gray-700 rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm text-white outline-none focus:border-blue-500"
               />
             </div>
 
             {/* File drop zone */}
-            <div className="border-2 border-dashed border-gray-600 rounded-3xl mt-8 h-[260px] flex flex-col items-center justify-center">
-              <div className="bg-blue-900 p-6 rounded-3xl">
-                <Upload className="text-blue-500" size={40} />
+            <div className="border-2 border-dashed border-gray-600 rounded-2xl sm:rounded-3xl mt-6 sm:mt-8 min-h-[220px] sm:min-h-[260px] p-6 flex flex-col items-center justify-center text-center">
+              <div className="bg-blue-900/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl mb-4 sm:mb-6">
+                <Upload className="text-blue-400" size={32} />
               </div>
 
-              <p className="text-white text-xl font-semibold mt-8">
+              <p className="text-white text-base sm:text-xl font-semibold">
                 Click or drag doctor prescription file here
               </p>
 
-              <p className="text-gray-400 mt-2">
+              <p className="text-gray-400 text-xs sm:text-sm mt-1 sm:mt-2">
                 Supports JPEG, PNG, WebP, GIF — up to 5MB
               </p>
 
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png,.webp,.gif"
-                className="mt-6 text-white"
+                className="mt-4 sm:mt-6 text-xs sm:text-sm text-white max-w-full"
                 onChange={(e) => setFile(e.target.files[0])}
               />
               {file && (
-                <p className="text-green-400 mt-2 text-sm">{file.name}</p>
+                <p className="text-emerald-400 mt-2 text-xs sm:text-sm font-medium">{file.name}</p>
               )}
             </div>
 
             {/* Feedback */}
             {error && (
-              <p className="text-red-400 mt-4">{error}</p>
+              <p className="text-rose-400 text-xs sm:text-sm mt-4 font-medium">{error}</p>
             )}
             {success && (
-              <p className="text-green-400 mt-4">
+              <p className="text-emerald-400 text-xs sm:text-sm mt-4 font-medium">
                 ✓ Prescription uploaded successfully! Awaiting pharmacist review.
               </p>
             )}
@@ -107,15 +107,16 @@ export default function Page() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-8 w-full bg-blue-700 hover:bg-blue-800 transition rounded-full py-5 text-white text-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
+              className="mt-6 sm:mt-8 w-full bg-blue-600 hover:bg-blue-500 transition rounded-xl sm:rounded-full py-3.5 sm:py-4 text-white text-sm sm:text-base font-semibold flex items-center justify-center gap-2 disabled:opacity-60 shadow-lg shadow-blue-900/30"
             >
-              <ShieldCheck size={20} />
+              <ShieldCheck size={18} />
               {loading ? "Uploading…" : "Submit for Pharmacist Verification"}
             </button>
 
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );

@@ -29,39 +29,39 @@ function StatusBadge({ status }) {
 function OrderCard({ order }) {
   const router = useRouter();
   return (
-    <div className="bg-[#161F33] rounded-[28px] border border-white/10 p-7 flex justify-between items-center">
+    <div className="bg-[#161F33] rounded-[24px] sm:rounded-[28px] border border-white/10 p-5 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-semibold text-white">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <h2 className="text-xl sm:text-2xl font-semibold text-white">
             Order #{order.order_id}
           </h2>
           <StatusBadge status={order.status} />
         </div>
 
-        <p className="text-gray-400 mt-3">
+        <p className="text-gray-400 mt-2 sm:mt-3 text-xs sm:text-sm">
           {new Date(order.created_at).toLocaleString()} • Branch:
           <span className="text-white font-medium"> {order.branch_name}</span>
         </p>
 
         {order.status === "Rejected" && (
-          <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+          <div className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs sm:text-sm">
             <p className="text-red-400 font-semibold">Rejected by Pharmacist</p>
           </div>
         )}
 
         {order.requires_prescription && (
-          <p className="text-yellow-400 text-sm mt-2">
-            Prescription required
+          <p className="text-amber-400 text-xs sm:text-sm mt-2 font-medium">
+            ⚠️ Prescription required
           </p>
         )}
       </div>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center justify-end">
         <button
           onClick={() => router.push(`/orders/${order.order_id}`)}
-          className="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center hover:border-green-500 transition"
+          className="bg-[#24314C] hover:bg-emerald-600 border border-white/10 hover:border-emerald-500 text-white px-5 py-2.5 rounded-xl sm:rounded-2xl font-semibold text-xs sm:text-sm transition flex items-center gap-2 shadow"
         >
-          <Eye className="text-white" size={18} />
+          <Eye size={16} /> View Order Details
         </button>
       </div>
     </div>
@@ -79,7 +79,6 @@ export default function OrderHistoryPage() {
     const fetchOrders = async () => {
       try {
         const res = await api.get("/customer/orders");
-        // Backend returns { success: true, orders: [...] }
         const data = res.data.orders ?? res.data.data?.orders ?? [];
         setOrders(data);
       } catch (err) {
@@ -104,44 +103,44 @@ export default function OrderHistoryPage() {
   return (
     <>
       <Header />
-      <div className="bg-[#0B1220] min-h-screen px-6 py-10">
+      <div className="bg-[#0B1220] min-h-screen px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="max-w-7xl mx-auto">
 
-          <section className="bg-gradient-to-r from-green-700 to-[#1A2341] rounded-[32px] px-10 py-10">
-            <h1 className="text-5xl font-bold text-white">
+          <section className="bg-gradient-to-r from-green-700 to-[#1A2341] rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 md:p-10 border border-white/10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
               Order History &amp; Reorders
             </h1>
-            <p className="text-gray-300 mt-4 text-lg">
+            <p className="text-gray-300 mt-2 sm:mt-4 text-sm sm:text-base lg:text-lg">
               View past medicine deliveries and track current orders.
             </p>
           </section>
 
           {/* Search + Filter */}
-          <div className="bg-[#161F33] rounded-[28px] px-6 py-5 mt-8 border border-white/10">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="bg-[#161F33] rounded-[24px] sm:rounded-[28px] p-4 sm:p-6 mt-6 sm:mt-8 border border-white/10">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
               <div className="relative w-full lg:w-[360px]">
                 <Search
-                  size={20}
+                  size={18}
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                 />
                 <input
                   placeholder="Search order ID or branch…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-[#24314C] rounded-full py-3 pl-12 pr-4 outline-none text-white placeholder:text-gray-400"
+                  className="w-full bg-[#24314C] rounded-xl sm:rounded-full py-2.5 sm:py-3 pl-11 pr-4 outline-none text-white text-xs sm:text-sm placeholder:text-gray-400"
                 />
               </div>
 
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-gray-300">Status:</span>
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <span className="text-gray-300 text-xs sm:text-sm font-medium">Status:</span>
                 {statuses.map((s) => (
                   <button
                     key={s}
                     onClick={() => setStatusFilter(s)}
-                    className={`px-3 py-1 rounded-lg text-sm transition ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                       statusFilter === s
-                        ? "bg-green-600 text-white"
-                        : "text-gray-300 hover:text-white"
+                        ? "bg-green-600 text-white shadow"
+                        : "bg-[#24314C]/60 text-gray-300 hover:text-white"
                     }`}
                   >
                     {s}
@@ -153,19 +152,19 @@ export default function OrderHistoryPage() {
 
           {/* Content */}
           {loading && (
-            <div className="text-gray-400 text-center py-20">Loading orders…</div>
+            <div className="text-gray-400 text-center py-16 text-sm sm:text-base">Loading orders…</div>
           )}
 
           {error && (
-            <div className="text-red-400 text-center py-20">{error}</div>
+            <div className="text-red-400 text-center py-16 text-sm sm:text-base">{error}</div>
           )}
 
           {!loading && !error && filtered.length === 0 && (
-            <div className="text-gray-400 text-center py-20">No orders found.</div>
+            <div className="text-gray-400 text-center py-16 text-sm sm:text-base">No orders found.</div>
           )}
 
           {!loading && !error && filtered.length > 0 && (
-            <div className="mt-10 space-y-6">
+            <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
               {filtered.map((order) => (
                 <OrderCard key={order.order_id} order={order} />
               ))}
@@ -177,3 +176,4 @@ export default function OrderHistoryPage() {
     </>
   );
 }
+

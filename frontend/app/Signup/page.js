@@ -121,10 +121,10 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0b1120] p-6">
-      <div className="grid min-h-[85vh] w-full max-w-7xl grid-cols-1 md:grid-cols-12 overflow-hidden rounded-3xl border border-gray-800 shadow-2xl">
+    <main className="flex min-h-screen items-center justify-center bg-[#0b1120] p-4 sm:p-6">
+      <div className="grid w-full max-w-7xl grid-cols-1 md:grid-cols-12 overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-800 shadow-2xl">
         {/* Left Visual Section */}
-        <div className="relative md:col-span-5 hidden md:block overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-700 to-green-900">
+        <div className="relative md:col-span-5 hidden md:block overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-700 to-green-900 min-h-[550px]">
           <Image
             src="/dr.jpeg"
             alt="Medical Illustration"
@@ -140,35 +140,35 @@ export default function SignupPage() {
               💊 Multi-Branch Smart Pharmacy
             </p>
 
-            <h1 className="text-4xl font-extrabold leading-tight">
+            <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
               Join
               <br />
               RxConnect
             </h1>
 
-            <p className="mt-4 text-base leading-relaxed text-emerald-100/80">
+            <p className="mt-4 text-sm lg:text-base leading-relaxed text-emerald-100/80">
               Create your account to order medicines, track live deliveries, upload doctor prescriptions, or manage branch inventory.
             </p>
           </div>
         </div>
 
         {/* Right Form Section */}
-        <div className="md:col-span-7 flex items-center justify-center bg-[#111827] px-6 py-10 md:px-12">
+        <div className="md:col-span-7 flex items-center justify-center bg-[#111827] px-5 py-8 sm:px-10 sm:py-10 md:px-12">
           <div className="w-full max-w-md">
-            <div className="mb-8">
-              <h2 className="text-3xl font-extrabold text-white">Create Account</h2>
-              <p className="mt-2 text-sm text-gray-400">
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Create Account</h2>
+              <p className="mt-2 text-xs sm:text-sm text-gray-400">
                 Enter your information to get started with RxConnect.
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-400 text-sm font-medium">
+              <div className="mb-6 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-400 text-xs sm:text-sm font-medium">
                 {error}
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-3.5 sm:space-y-4">
               {/* Role Selection */}
               <div>
                 <label className="mb-1.5 block text-xs font-semibold uppercase text-gray-300">
@@ -180,7 +180,7 @@ export default function SignupPage() {
                       key={r}
                       type="button"
                       onClick={() => setRole(r)}
-                      className={`py-2.5 rounded-xl text-xs font-semibold capitalize border transition ${
+                      className={`py-2 sm:py-2.5 rounded-xl text-xs font-semibold capitalize border transition ${
                         role === r
                           ? "bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-900/40"
                           : "bg-[#1f2937] border-gray-700 text-gray-400 hover:text-white"
@@ -203,7 +203,7 @@ export default function SignupPage() {
                     placeholder={`Enter ${role} registration secret`}
                     value={roleSecret}
                     onChange={(e) => setRoleSecret(e.target.value)}
-                    className="w-full rounded-xl border border-amber-500/40 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-500 text-sm outline-none focus:border-amber-400"
+                    className="w-full rounded-xl border border-amber-500/40 bg-[#1f2937] px-4 py-2.5 sm:py-3 text-white placeholder-gray-500 text-xs sm:text-sm outline-none focus:border-amber-400"
                   />
                 </div>
               )}
@@ -220,9 +220,9 @@ export default function SignupPage() {
                     placeholder="Enter your assigned Branch ID (e.g. 1, 2, 3)"
                     value={branchId}
                     onChange={(e) => setBranchId(e.target.value)}
-                    className="w-full rounded-xl border border-emerald-500/40 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-500 text-sm outline-none focus:border-emerald-400"
+                    className="w-full rounded-xl border border-emerald-500/40 bg-[#1f2937] px-4 py-2.5 sm:py-3 text-white placeholder-gray-500 text-xs sm:text-sm outline-none focus:border-emerald-400"
                   />
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-[11px] text-gray-500">
                     Contact your administrator for your assigned Branch ID.
                   </p>
                 </div>
@@ -238,7 +238,7 @@ export default function SignupPage() {
                   placeholder="Enter your full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-500 text-sm outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-2.5 sm:py-3 text-white placeholder-gray-500 text-xs sm:text-sm outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -252,12 +252,12 @@ export default function SignupPage() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-500 text-sm outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-2.5 sm:py-3 text-white placeholder-gray-500 text-xs sm:text-sm outline-none focus:border-emerald-500"
                 />
               </div>
 
               {/* Password */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold uppercase text-gray-300">
                     Password
@@ -267,7 +267,7 @@ export default function SignupPage() {
                     placeholder="Min 6 chars"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-500 text-sm outline-none focus:border-emerald-500"
+                    className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-2.5 sm:py-3 text-white placeholder-gray-500 text-xs sm:text-sm outline-none focus:border-emerald-500"
                   />
                 </div>
                 <div>
@@ -279,7 +279,7 @@ export default function SignupPage() {
                     placeholder="Repeat pass"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-500 text-sm outline-none focus:border-emerald-500"
+                    className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-2.5 sm:py-3 text-white placeholder-gray-500 text-xs sm:text-sm outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -288,13 +288,13 @@ export default function SignupPage() {
                 type="button"
                 onClick={handleSignup}
                 disabled={loading}
-                className="w-full rounded-xl bg-emerald-600 py-3.5 font-bold text-white transition hover:bg-emerald-500 shadow-lg shadow-emerald-900/30 disabled:opacity-60 mt-4"
+                className="w-full rounded-xl bg-emerald-600 py-3 sm:py-3.5 font-bold text-white text-xs sm:text-sm transition hover:bg-emerald-500 shadow-lg shadow-emerald-900/30 disabled:opacity-60 mt-3 sm:mt-4"
               >
                 {loading ? "Registering Account..." : "Create Account →"}
               </button>
             </div>
 
-            <p className="mt-6 text-center text-sm text-gray-400">
+            <p className="mt-5 sm:mt-6 text-center text-xs sm:text-sm text-gray-400">
               Already have an account?{" "}
               <Link href="/Login" className="font-semibold text-emerald-400 hover:text-emerald-300">
                 Sign In
@@ -305,4 +305,4 @@ export default function SignupPage() {
       </div>
     </main>
   );
-}
+}

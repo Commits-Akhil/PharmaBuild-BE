@@ -93,11 +93,11 @@ export default function OrderDetailPage() {
   return (
     <>
       <Header />
-      <div className="bg-[#0B1220] min-h-screen px-6 py-10">
+      <div className="bg-[#0B1220] min-h-screen px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="max-w-5xl mx-auto">
           <button
             onClick={() => router.push("/orders")}
-            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-semibold mb-6 transition"
+            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-xs sm:text-sm font-semibold mb-6 transition"
           >
             <ArrowLeft size={16} /> Back to Order History
           </button>
@@ -109,23 +109,25 @@ export default function OrderDetailPage() {
             </div>
           )}
 
-          {error && <div className="bg-rose-500/10 border border-rose-500/30 p-8 rounded-3xl text-rose-400 text-center">{error}</div>}
+          {error && <div className="bg-rose-500/10 border border-rose-500/30 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-rose-400 text-center text-sm sm:text-base">{error}</div>}
 
           {!loading && !error && order && (
             <>
               {/* Order Header */}
-              <div className="bg-[#161F33] rounded-[30px] p-8 mb-6 border border-white/10 shadow-xl">
+              <div className="bg-[#161F33] rounded-[24px] sm:rounded-[30px] p-5 sm:p-8 mb-6 border border-white/10 shadow-xl">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-white/10">
                   <div>
                     <span className="text-xs font-mono text-gray-400 uppercase">Fulfillment Record</span>
-                    <h1 className="text-3xl font-extrabold text-white mt-1">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
                       Order #{order.order_id}
                     </h1>
                   </div>
-                  <StatusBadge status={order.status} />
+                  <div className="self-start sm:self-auto">
+                    <StatusBadge status={order.status} />
+                  </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-4 text-sm text-gray-300">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-gray-300">
                   <div>
                     <p className="text-xs text-gray-400">Order Placed Date</p>
                     <p className="font-semibold text-white mt-1">{new Date(order.created_at).toLocaleString()}</p>
@@ -138,31 +140,31 @@ export default function OrderDetailPage() {
               </div>
 
               {/* Items Table */}
-              <div className="bg-[#161F33] rounded-[30px] p-8 mb-6 border border-white/10 shadow-xl">
-                <h2 className="text-xl font-bold text-white mb-4">
+              <div className="bg-[#161F33] rounded-[24px] sm:rounded-[30px] p-5 sm:p-8 mb-6 border border-white/10 shadow-xl">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
                   Purchased Items ({items.length})
                 </h2>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm text-gray-300">
+                  <table className="w-full text-left text-xs sm:text-sm text-gray-300">
                     <thead>
                       <tr className="border-b border-white/10 text-gray-400 text-xs uppercase">
-                        <th className="pb-3">Medicine Name</th>
-                        <th className="pb-3">Quantity</th>
-                        <th className="pb-3">Classification</th>
+                        <th className="pb-3 pr-4">Medicine Name</th>
+                        <th className="pb-3 px-4">Quantity</th>
+                        <th className="pb-3 pl-4">Classification</th>
                       </tr>
                     </thead>
                     <tbody>
                       {items.map((item) => (
                         <tr key={item.item_id} className="border-b border-white/5">
-                          <td className="py-3 font-semibold text-white">{item.medicine_name}</td>
-                          <td className="py-3 font-mono text-emerald-400 font-bold">{item.quantity}</td>
-                          <td className="py-3">
+                          <td className="py-3 pr-4 font-semibold text-white">{item.medicine_name}</td>
+                          <td className="py-3 px-4 font-mono text-emerald-400 font-bold">{item.quantity}</td>
+                          <td className="py-3 pl-4">
                             {item.is_prescription_required ? (
-                              <span className="text-amber-400 text-xs font-semibold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                              <span className="text-amber-400 text-[10px] sm:text-xs font-semibold bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 whitespace-nowrap">
                                 Rx Required
                               </span>
                             ) : (
-                              <span className="text-emerald-400 text-xs font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                              <span className="text-emerald-400 text-[10px] sm:text-xs font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 whitespace-nowrap">
                                 OTC
                               </span>
                             )}
@@ -176,26 +178,26 @@ export default function OrderDetailPage() {
 
               {/* Prescription Section */}
               {order.requires_prescription && (
-                <div className="bg-[#161F33] rounded-[30px] p-8 border border-white/10 shadow-xl">
-                  <h2 className="text-xl font-bold text-white mb-4">
+                <div className="bg-[#161F33] rounded-[24px] sm:rounded-[30px] p-5 sm:p-8 border border-white/10 shadow-xl">
+                  <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
                     Doctor Prescription Document
                   </h2>
 
                   {prescription ? (
                     <div>
-                      <div className="flex items-center gap-4 mb-4">
-                        <span className="text-sm text-gray-300">Review Status:</span>
+                      <div className="flex items-center gap-3 sm:gap-4 mb-4 flex-wrap">
+                        <span className="text-xs sm:text-sm text-gray-300">Review Status:</span>
                         <VerificationBadge status={prescription.verification_status} />
                       </div>
                       <p className="text-xs text-gray-400 mb-4">
                         Uploaded on {new Date(prescription.uploaded_at).toLocaleString()}
                       </p>
                       {prescription.rejection_reason && (
-                        <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-2xl mb-4 text-rose-300 text-sm font-semibold">
+                        <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-2xl mb-4 text-rose-300 text-xs sm:text-sm font-semibold">
                           Rejection Reason: {prescription.rejection_reason}
                         </div>
                       )}
-                      <div className="bg-[#0D1527] p-4 rounded-2xl border border-white/10 max-w-md">
+                      <div className="bg-[#0D1527] p-3 sm:p-4 rounded-2xl border border-white/10 max-w-md">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={getImageUrl(prescription.image_url)}
@@ -205,15 +207,15 @@ export default function OrderDetailPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-[#0D1527] border border-amber-500/30 p-6 rounded-2xl">
-                      <p className="text-amber-300 text-sm font-semibold mb-4">
+                    <div className="bg-[#0D1527] border border-amber-500/30 p-4 sm:p-6 rounded-2xl">
+                      <p className="text-amber-300 text-xs sm:text-sm font-semibold mb-4">
                         ⚠️ Order Pending: Upload your doctor prescription image to allow pharmacist verification.
                       </p>
                       <input
                         type="file"
                         accept=".jpg,.jpeg,.png,.webp,.gif"
                         onChange={(e) => setPrescFile(e.target.files[0])}
-                        className="text-white text-sm mb-4 block"
+                        className="text-white text-xs sm:text-sm mb-4 block w-full"
                       />
                       {uploadError && (
                         <p className="text-rose-400 text-xs mb-3 font-medium">{uploadError}</p>
@@ -221,7 +223,7 @@ export default function OrderDetailPage() {
                       <button
                         onClick={handleUpload}
                         disabled={uploading || !prescFile}
-                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 transition text-white px-6 py-3 rounded-2xl font-bold text-sm disabled:opacity-50 shadow-lg shadow-emerald-900/40"
+                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 transition text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm disabled:opacity-50 shadow-lg shadow-emerald-900/40"
                       >
                         <Upload size={16} />
                         {uploading ? "Uploading Document..." : "Upload Prescription"}
@@ -234,6 +236,7 @@ export default function OrderDetailPage() {
           )}
         </div>
       </div>
+
       <Footer />
     </>
   );

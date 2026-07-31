@@ -1,9 +1,8 @@
-import {  Pill,  ShieldPlus,  HeartPulse,  Heart,  Baby,} from "lucide-react";
-
+import { Pill, ShieldPlus, HeartPulse, Heart, Baby } from "lucide-react";
 import CategoryCard from "./categoryCard";
+import Link from "next/link";
 
 export default function Categories() {
-
   const categories = [
     {
       title: "Prescription",
@@ -38,35 +37,27 @@ export default function Categories() {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto py-16">
-
-      <div className="flex justify-between items-center mb-8">
-
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
-          <h2 className="text-4xl font-bold text-white">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
             Browse Health Categories
           </h2>
-
-          <p className="text-gray-400 mt-2">
+          <p className="text-gray-400 text-sm sm:text-base mt-1 sm:mt-2">
             Explore authentic medicines from verified distributors.
           </p>
-
         </div>
 
-        <button className="text-green-500 hover:text-green-600 transition-transform hover:scale-90">
+        <Link href="/medicines" className="text-emerald-400 hover:text-emerald-300 font-semibold text-sm">
           View All →
-        </button>
-
+        </Link>
       </div>
 
-      <div className="grid md:grid-cols-5 gap-6">
-
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
         {categories.map((item, index) => (
           <CategoryCard key={index} {...item} />
         ))}
-
       </div>
-
     </section>
   );
-}
+}

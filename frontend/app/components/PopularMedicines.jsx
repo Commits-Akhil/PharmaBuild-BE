@@ -15,8 +15,8 @@ export default function PopularMedicines() {
 
   if (loading) {
     return (
-      <section className="max-w-7xl mx-auto py-10">
-        <div className="grid md:grid-cols-4 gap-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
@@ -30,8 +30,8 @@ export default function PopularMedicines() {
 
   if (error) {
     return (
-      <section className="max-w-7xl mx-auto py-10">
-        <div className="text-red-400 text-center py-8">{error}</div>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div className="text-red-400 text-center py-8 text-sm sm:text-base">{error}</div>
       </section>
     );
   }
@@ -39,12 +39,12 @@ export default function PopularMedicines() {
   const display = medicines.slice(0, 8);
 
   return (
-    <section className="max-w-7xl mx-auto py-10">
-      <div className="grid md:grid-cols-4 gap-8">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
         {display.map((medicine) => (
           <MedicineCard key={medicine.id} medicine={medicine} />
         ))}
       </div>
     </section>
   );
-}
+}

@@ -10,23 +10,23 @@ export default function StatCard({ title, value, icon: Icon, color = "emerald" }
   };
 
   return (
-    <div className={`bg-[#161F33] rounded-[28px] border border-white/10 p-6 flex items-center justify-between shadow-xl relative overflow-hidden`}>
+    <div className={`bg-[#161F33] rounded-[24px] sm:rounded-[28px] border border-white/10 p-4 sm:p-6 flex items-center justify-between shadow-xl relative overflow-hidden`}>
       <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${bgGradients[color]} rounded-full filter blur-2xl opacity-20 pointer-events-none`} />
       
       <div>
-        <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">
+        <p className="text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-1 sm:mb-2">
           {title}
         </p>
-        <h3 className="text-4xl font-extrabold text-white">
+        <h3 className="text-2xl sm:text-4xl font-extrabold text-white">
           {value}
         </h3>
       </div>
 
       {Icon && (
-        <div className={`p-4 rounded-2xl bg-gradient-to-br ${bgGradients[color]} border shadow-inner`}>
-          <Icon size={28} />
+        <div className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br ${bgGradients[color]} border shadow-inner shrink-0`}>
+          <Icon size={22} className="sm:w-7 sm:h-7" />
         </div>
       )}
     </div>
   );
-}
+}

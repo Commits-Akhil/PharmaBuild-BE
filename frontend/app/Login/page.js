@@ -54,9 +54,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0b1120] p-6">
-      <div className="grid min-h-[85vh] w-full max-w-7xl grid-cols-1 md:grid-cols-12 overflow-hidden rounded-3xl border border-gray-800 shadow-2xl">
-        <div className="relative md:col-span-5 hidden md:block overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-700 to-green-900">
+    <div className="flex min-h-screen items-center justify-center bg-[#0b1120] p-4 sm:p-6">
+      <div className="grid w-full max-w-7xl grid-cols-1 md:grid-cols-12 overflow-hidden rounded-2xl sm:rounded-3xl border border-gray-800 shadow-2xl">
+        <div className="relative md:col-span-5 hidden md:block overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-700 to-green-900 min-h-[500px]">
           <Image
             src="/dr.jpeg"
             alt="Medical Illustration"
@@ -72,34 +72,34 @@ export default function LoginPage() {
               Multi-Branch Smart Pharmacy
             </p>
 
-            <h1 className="text-5xl font-extrabold leading-tight">
+            <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
               Welcome to
               <br />
               RxConnect
             </h1>
 
-            <p className="mt-4 text-base leading-relaxed text-emerald-100/80">
+            <p className="mt-4 text-sm lg:text-base leading-relaxed text-emerald-100/80">
               Order medicines from nearby pharmacies, upload doctor prescriptions, check live branch inventory, and get express doorstep delivery.
             </p>
           </div>
         </div>
 
-        <div className="md:col-span-7 flex items-center justify-center bg-[#111827] px-8 py-12 md:px-16">
+        <div className="md:col-span-7 flex items-center justify-center bg-[#111827] px-5 py-8 sm:px-10 sm:py-12 md:px-16">
           <div className="w-full max-w-md">
-            <div className="mb-10">
-              <h2 className="text-4xl font-extrabold text-white">Sign In</h2>
-              <p className="mt-2 text-gray-400 text-sm">
+            <div className="mb-6 sm:mb-10">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Sign In</h2>
+              <p className="mt-2 text-gray-400 text-xs sm:text-sm">
                 Enter your credentials to access your RxConnect account.
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-400 text-sm font-medium">
+              <div className="mb-6 rounded-xl bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-400 text-xs sm:text-sm font-medium">
                 {error}
               </div>
             )}
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase text-gray-300">
                   Email Address
@@ -110,7 +110,7 @@ export default function LoginPage() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-5 py-4 text-white placeholder-gray-500 outline-none transition focus:border-emerald-500"
+                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-3 sm:px-5 sm:py-4 text-white text-sm placeholder-gray-500 outline-none transition focus:border-emerald-500"
                 />
               </div>
 
@@ -125,20 +125,20 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-5 py-4 text-white placeholder-gray-500 outline-none transition focus:border-emerald-500"
+                  className="w-full rounded-xl border border-gray-700 bg-[#1f2937] px-4 py-3 sm:px-5 sm:py-4 text-white text-sm placeholder-gray-500 outline-none transition focus:border-emerald-500"
                 />
               </div>
 
               <button
                 onClick={handleLogin}
                 disabled={loading}
-                className="w-full rounded-xl bg-emerald-600 py-4 font-bold text-white transition hover:bg-emerald-500 shadow-lg shadow-emerald-900/30 disabled:opacity-60"
+                className="w-full rounded-xl bg-emerald-600 py-3.5 sm:py-4 font-bold text-white text-sm sm:text-base transition hover:bg-emerald-500 shadow-lg shadow-emerald-900/30 disabled:opacity-60"
               >
                 {loading ? "Logging in..." : "Sign In →"}
               </button>
             </div>
 
-            <p className="mt-8 text-center text-sm text-gray-400">
+            <p className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-gray-400">
               Don&apos;t have an account?{" "}
               <Link
                 href="/Signup"
@@ -152,4 +152,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+}
