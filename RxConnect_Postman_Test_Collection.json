@@ -1,0 +1,1241 @@
+{
+  "info": {
+    "_postman_id": "rxconnect-api-testcases-collection",
+    "name": "RxConnect Pharmacy API — Complete Test Suite",
+    "description": "Comprehensive Postman Test Collection covering all API endpoints of RxConnect Pharmacy System.\n\nIncludes automated JavaScript test scripts (`pm.test`) for:\n- Status code verification (200, 201, 400, 401, 403, 404, 409)\n- Content-Type and JSON structure assertions\n- Token auto-capture & collection variable updates\n- Happy path and edge case / error testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pharmacistToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "prescriptionId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "medicineId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "branchId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 1. Authentication (/auth)",
+      "description": "Test cases for user registration, login, profile retrieval, and authentication error handling.",
+      "item": [
+        {
+          "name": "TC-AUTH-01: Register Customer (Success 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Response structure is valid', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.data).to.have.property('token');",
+                  "    pm.expect(jsonData.data.user).to.have.property('email');",
+                  "    if (jsonData.data.token) {",
+                  "        pm.collectionVariables.set('token', jsonData.data.token);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser_{{$randomInt}}@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"9876543210\",\n  \"address\": \"123 Test St\",\n  \"branch_id\": 1,\n  \"role\": \"customer\"\n}"
+            },
+            "description": "Tests registering a new customer account. Verifies 201 status and auto-saves authorization token."
+          }
+        },
+        {
+          "name": "TC-AUTH-02: Register Duplicate Email (Error 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 409 Conflict', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test('Error message returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('already registered');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"customer\"\n}"
+            },
+            "description": "Tests registration with an already existing email address. Expects 409 Conflict."
+          }
+        },
+        {
+          "name": "TC-AUTH-03: Register Admin User (Success 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Admin token generated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data.user.role).to.eql('admin');",
+                  "    if (jsonData.data.token) {",
+                  "        pm.collectionVariables.set('adminToken', jsonData.data.token);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Admin\",\n  \"email\": \"admin_{{$randomInt}}@example.com\",\n  \"password\": \"adminpass123\",\n  \"role\": \"admin\",\n  \"role_secret\": \"pharmacy_admin_secret_key_2026\"\n}"
+            },
+            "description": "Tests registering an admin user with valid role_secret. Saves adminToken."
+          }
+        },
+        {
+          "name": "TC-AUTH-04: Login Success (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns valid token & user data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data).to.have.property('token');",
+                  "    pm.expect(jsonData.data.user).to.have.property('id');",
+                  "    if (jsonData.data.token) {",
+                  "        pm.collectionVariables.set('token', jsonData.data.token);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "description": "Tests successful user login. Auto-saves JWT token to collection variable {{token}}."
+          }
+        },
+        {
+          "name": "TC-AUTH-05: Login Invalid Password (Error 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test('Invalid credentials message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.eql('Invalid email or password.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "description": "Tests login attempt with incorrect password. Expects 401 Unauthorized."
+          }
+        },
+        {
+          "name": "TC-AUTH-06: Get Profile (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Profile details returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data.user).to.have.property('id');",
+                  "    pm.expect(jsonData.data.user).to.have.property('email');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Fetches profile of currently logged-in user using Bearer token."
+          }
+        },
+        {
+          "name": "TC-AUTH-07: Get Profile Missing Token (Error 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test('Access denied message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('Access denied');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Tests fetching profile without providing Authorization header. Expects 401."
+          }
+        }
+      ]
+    },
+    {
+      "name": "💊 2. Medicines (/medicines)",
+      "description": "Test cases for public medicine catalog endpoints.",
+      "item": [
+        {
+          "name": "TC-MED-01: Get All Medicines (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Medicines list returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data.medicines).to.be.an('array');",
+                  "    if (jsonData.data.medicines.length > 0) {",
+                  "        const med = jsonData.data.medicines[0];",
+                  "        pm.expect(med).to.have.property('id');",
+                  "        pm.expect(med).to.have.property('name');",
+                  "        pm.expect(med).to.have.property('is_prescription_required');",
+                  "        pm.collectionVariables.set('medicineId', String(med.id));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medicines",
+              "host": ["{{baseUrl}}"],
+              "path": ["medicines"]
+            },
+            "description": "Public endpoint listing all available medicines. Auto-captures first medicineId."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 3. Stock Check (/orders/check-stock)",
+      "description": "Test cases for stock availability checks across branches.",
+      "item": [
+        {
+          "name": "TC-STK-01: Check Stock Valid Medicines (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Stock availability payload is valid', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData).to.have.property('prescriptionRequired');",
+                  "    pm.expect(jsonData.availableBranches).to.be.an('array');",
+                  "    if (jsonData.availableBranches.length > 0) {",
+                  "        pm.collectionVariables.set('branchId', String(jsonData.availableBranches[0].branchId));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/check-stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "check-stock"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicines\": [\n    { \"medicineId\": 1, \"quantity\": 2 },\n    { \"medicineId\": 3, \"quantity\": 1 }\n  ]\n}"
+            },
+            "description": "Checks branch stock availability for a list of medicine IDs. Auto-saves valid branchId."
+          }
+        },
+        {
+          "name": "TC-STK-02: Check Stock Empty Array (Error 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Error message returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('required');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/check-stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "check-stock"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicines\": []\n}"
+            },
+            "description": "Tests stock check with an empty medicine array. Expects 400 Bad Request."
+          }
+        },
+        {
+          "name": "TC-STK-03: Check Stock Invalid Medicine ID (Error 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Not found message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('not found');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/check-stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "check-stock"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicines\": [\n    { \"medicineId\": 999999, \"quantity\": 1 }\n  ]\n}"
+            },
+            "description": "Tests stock check with a non-existent medicine ID. Expects 404 Not Found."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📦 4. Place Order (/orders/place)",
+      "description": "Test cases for customer order placement.",
+      "item": [
+        {
+          "name": "TC-ORD-01: Place Order Success (Success 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Order created successfully', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data).to.have.property('orderId');",
+                  "    pm.expect(jsonData.data).to.have.property('nextStep');",
+                  "    if (jsonData.data.orderId) {",
+                  "        pm.collectionVariables.set('orderId', String(jsonData.data.orderId));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/place",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "place"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branchId\": 1,\n  \"requiresPrescription\": false,\n  \"items\": [\n    { \"medicine_id\": 1, \"quantity\": 1 }\n  ]\n}"
+            },
+            "description": "Places a standard order for non-prescription medicine. Saves orderId."
+          }
+        },
+        {
+          "name": "TC-ORD-02: Place Order With Prescription Flag (Success 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Next step prompts prescription upload', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data.nextStep).to.include('prescription');",
+                  "    if (jsonData.data.orderId) {",
+                  "        pm.collectionVariables.set('orderId', String(jsonData.data.orderId));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/place",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "place"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branchId\": 1,\n  \"requiresPrescription\": true,\n  \"items\": [\n    { \"medicine_id\": 2, \"quantity\": 1 }\n  ]\n}"
+            },
+            "description": "Places an order requiring prescription verification."
+          }
+        },
+        {
+          "name": "TC-ORD-03: Place Order Missing Branch ID (Error 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Branch ID error message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('branchId');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/place",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "place"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requiresPrescription\": false,\n  \"items\": [\n    { \"medicine_id\": 1, \"quantity\": 1 }\n  ]\n}"
+            },
+            "description": "Tests order placement without branchId parameter. Expects 400 Bad Request."
+          }
+        },
+        {
+          "name": "TC-ORD-04: Place Order Unauthenticated (Error 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 401 Unauthorized', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/place",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "place"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branchId\": 1,\n  \"requiresPrescription\": false,\n  \"items\": [\n    { \"medicine_id\": 1, \"quantity\": 1 }\n  ]\n}"
+            },
+            "description": "Tests order placement without authorization token. Expects 401 Unauthorized."
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 5. Customer Orders (/customer/orders)",
+      "description": "Test cases for customer order history endpoints.",
+      "item": [
+        {
+          "name": "TC-CUST-01: Get Customer Orders (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of customer orders', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.orders).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["customer", "orders"]
+            },
+            "description": "Fetches all orders placed by the logged-in customer."
+          }
+        },
+        {
+          "name": "TC-CUST-02: Get Order Details By ID (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Order details structure is valid', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.order).to.have.property('order_id');",
+                  "    pm.expect(jsonData.items).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["customer", "orders", "{{orderId}}"]
+            },
+            "description": "Fetches detailed information for a specific order owned by customer."
+          }
+        },
+        {
+          "name": "TC-CUST-03: Get Order Invalid ID Format (Error 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Invalid order ID message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.eql('Invalid Order ID');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/orders/invalid-id-string",
+              "host": ["{{baseUrl}}"],
+              "path": ["customer", "orders", "invalid-id-string"]
+            },
+            "description": "Tests retrieving order details with non-numeric ID parameter. Expects 400."
+          }
+        },
+        {
+          "name": "TC-CUST-04: Get Order Non-Existent ID (Error 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Order not found message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.eql('Order not found');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customer/orders/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["customer", "orders", "999999"]
+            },
+            "description": "Tests retrieving non-existent order ID. Expects 404 Not Found."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧾 6. Prescriptions (/prescriptions)",
+      "description": "Test cases for prescription image uploads.",
+      "item": [
+        {
+          "name": "TC-PRES-01: Upload Prescription (Success 201/200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 or 201', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Prescription upload verified', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.data).to.have.property('prescription');",
+                  "    if (jsonData.data.prescription && jsonData.data.prescription.id) {",
+                  "        pm.collectionVariables.set('prescriptionId', String(jsonData.data.prescription.id));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/prescriptions/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["prescriptions", "upload"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "prescription",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "description": "Uploads prescription image for order using multipart/form-data. Auto-saves prescriptionId."
+          }
+        },
+        {
+          "name": "TC-PRES-02: Upload Prescription Missing File (Error 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Missing file error message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('file');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/prescriptions/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["prescriptions", "upload"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "description": "Tests uploading prescription without selecting a file. Expects 400 Bad Request."
+          }
+        }
+      ]
+    },
+    {
+      "name": "💼 7. Pharmacist (/pharmacist)",
+      "description": "Test cases for pharmacist prescription review and approval workflow.",
+      "item": [
+        {
+          "name": "TC-PHARM-01: Health Check (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Health check response', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.message).to.eql('Route is working');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pharmacist/pending-prescriptions",
+              "host": ["{{baseUrl}}"],
+              "path": ["pharmacist", "pending-prescriptions"]
+            },
+            "description": "Verifies pharmacist health check route."
+          }
+        },
+        {
+          "name": "TC-PHARM-02: Get Pending Prescriptions (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns pending prescriptions list', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.prescriptions).to.be.an('array');",
+                  "    if (jsonData.prescriptions.length > 0) {",
+                  "        pm.collectionVariables.set('prescriptionId', String(jsonData.prescriptions[0].prescription_id));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pharmacist/pending-prescription",
+              "host": ["{{baseUrl}}"],
+              "path": ["pharmacist", "pending-prescription"]
+            },
+            "description": "Retrieves pending prescriptions for pharmacist review. Auto-captures prescriptionId."
+          }
+        },
+        {
+          "name": "TC-PHARM-03: Approve Prescription (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Approval message returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.message).to.eql('Prescription Approved');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pharmacist/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["pharmacist", "approve"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prescriptionId\": {{prescriptionId}}\n}"
+            },
+            "description": "Approves pending prescription and marks order verified."
+          }
+        },
+        {
+          "name": "TC-PHARM-04: Approve Prescription Missing ID (Error 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Missing prescription ID message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('ID required');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pharmacist/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["pharmacist", "approve"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "description": "Tests approving prescription without providing prescriptionId. Expects 400."
+          }
+        },
+        {
+          "name": "TC-PHARM-05: Reject Prescription (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Rejection message returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.message).to.eql('Prescription Rejected');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pharmacist/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["pharmacist", "reject"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prescriptionId\": {{prescriptionId}},\n  \"rejectionReason\": \"Unclear prescription image.\"\n}"
+            },
+            "description": "Rejects prescription and releases stock back to inventory."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛡️ 8. Admin (/admin)",
+      "description": "Test cases for admin system metrics and management.",
+      "item": [
+        {
+          "name": "TC-ADM-01: Get All Users (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns list of registered users', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.users).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"]
+            },
+            "description": "Retrieves all registered users. Requires adminToken."
+          }
+        },
+        {
+          "name": "TC-ADM-02: Get All Users Customer Token (Error 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 403 Forbidden', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "pm.test('Role required error message', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(false);",
+                  "    pm.expect(jsonData.message).to.include('Required role');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"]
+            },
+            "description": "Tests admin endpoint using customer token. Expects 403 Forbidden."
+          }
+        },
+        {
+          "name": "TC-ADM-03: Get All Branches & Inventory (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns branches with inventory stock', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.branches).to.be.an('array');",
+                  "    if (jsonData.branches.length > 0) {",
+                  "        pm.expect(jsonData.branches[0]).to.have.property('stock');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/branches",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "branches"]
+            },
+            "description": "Retrieves all pharmacy branches with stock inventory status."
+          }
+        },
+        {
+          "name": "TC-ADM-04: Get All System Orders (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Returns system-wide order list', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.expect(jsonData.orders).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "orders"]
+            },
+            "description": "Retrieves all orders system-wide."
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚙️ 9. Server Health Check",
+      "description": "Root server health check endpoint.",
+      "item": [
+        {
+          "name": "TC-SRV-01: Server Liveness Check (Success 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Server response is running text', function () {",
+                  "    pm.expect(pm.response.text()).to.include('Server is running');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Verifies express backend root route liveness."
+          }
+        }
+      ]
+    }
+  ]
+}
