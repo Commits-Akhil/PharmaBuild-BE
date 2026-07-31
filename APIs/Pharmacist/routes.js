@@ -7,15 +7,16 @@ const {
     rejectPrescription
 } = require("./controller");
 
-router.get("/pending-prescriptions", (req, res) => {
-    console.log("Pending route called");
-    res.json({
-        success: true,
-        message: "Route is working"
-    });
-});
+const verifyToken = require("../../AuthHandler/verifyToken");
+const authorizeRoles = require("../../AuthHandler/authorizeRoles");
 
-router.get("/pending-prescription", getPendingPrescriptions);
+
+router.use(
+    verifyToken,
+    authorizeRoles("pharmacist")
+);
+
+router.get("/pending-prescriptions", getPendingPrescriptions);
 
 router.post("/approve", approvePrescription);
 
