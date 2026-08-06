@@ -17,13 +17,13 @@ const register = async (req, res) => {
   const { name, email, password, phone, address, branch_id, role, role_secret } = req.body;
 
   // Validate role value
-  const allowedRoles = ['customer', 'admin', 'pharmacist'];
+  const allowedRoles = ['customer', 'admin', 'pharmacist', 'delivery_partner'];
   const selectedRole = (role || 'customer').toLowerCase();
 
   if (!allowedRoles.includes(selectedRole))
     return res.status(400).json({ success: false, message: 'Invalid role selected.' });
 
-  // For admin/pharmacist, verify the role secret before proceeding
+  // For admin/pharmacist/delivery_partner, verify the role secret before proceeding
   if (selectedRole === 'admin') {
     if (!role_secret || role_secret !== process.env.ADMIN_SECRET)
       return res.status(403).json({ success: false, message: 'Invalid admin registration secret.' });
@@ -32,6 +32,11 @@ const register = async (req, res) => {
   if (selectedRole === 'pharmacist') {
     if (!role_secret || role_secret !== process.env.PHARMACIST_SECRET)
       return res.status(403).json({ success: false, message: 'Invalid pharmacist registration secret.' });
+  }
+
+  if (selectedRole === 'delivery_partner') {
+    if (!role_secret || role_secret !== process.env.DELIVERY_SECRET)
+      return res.status(403).json({ success: false, message: 'Invalid delivery partner registration secret.' });
   }
 
   try {

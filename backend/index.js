@@ -41,6 +41,8 @@ const adminRoutes = require("./APIs/Admin/routes");
 
 app.use("/admin", adminRoutes);
 
+app.use("/delivery", require("./APIs/Delivery/routes"));
+
 const PORT = process.env.PORT || 5000;
 
 app.get("/", (req, res) => {
