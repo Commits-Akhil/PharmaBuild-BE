@@ -10,13 +10,12 @@ const getAvailableOrders = async (req, res) => {
         const result = await pool.query(`
             SELECT
                 o.id                    AS order_id,
+                o.status,
                 o.created_at,
-                o.total_amount,
                 -- Branch (pickup) info
                 b.id                    AS branch_id,
                 b.name                  AS branch_name,
-                b.address               AS pickup_address,
-                b.phone                 AS branch_phone,
+                b.location              AS pickup_address,
                 -- Customer (delivery) info
                 u.name                  AS customer_name,
                 u.address               AS delivery_address,
@@ -127,12 +126,10 @@ const getMyOrders = async (req, res) => {
             `SELECT
                 o.id            AS order_id,
                 o.status,
-                o.total_amount,
                 o.created_at,
                 o.updated_at,
                 b.name          AS branch_name,
-                b.address       AS pickup_address,
-                b.phone         AS branch_phone,
+                b.location      AS pickup_address,
                 u.name          AS customer_name,
                 u.address       AS delivery_address,
                 u.phone         AS customer_phone
