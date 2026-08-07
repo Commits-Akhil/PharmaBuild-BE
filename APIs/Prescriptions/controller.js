@@ -15,18 +15,29 @@ const storage = multer.diskStorage({
   },
 });
 
+const ALLOWED_MIME_TYPES = [
+  // Images
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  // Documents
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+];
+
 const fileFilter = (req, file, cb) => {
-  const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-  allowed.includes(file.mimetype)
+  ALLOWED_MIME_TYPES.includes(file.mimetype)
     ? cb(null, true)
-    : cb(new Error('Only image files are allowed (jpeg, jpg, png, webp, gif).'), false);
+    : cb(new Error('Only images (JPG, PNG, WebP, GIF), PDF, or DOCX files are allowed.'), false);
 };
 
 
 const uploadMiddleware = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
 }).single('prescription');
 
 
@@ -40,7 +51,7 @@ const uploadPrescription = async (req, res) => {
   }
 
   if (!req.file)
-    return res.status(400).json({ success: false, message: 'Prescription image file is required.' });
+    return res.status(400).json({ success: false, message: 'Prescription file is required (JPG, PNG, WebP, GIF, PDF, or DOCX).' });
 
   try {
     const orderRes = await pool.query(
