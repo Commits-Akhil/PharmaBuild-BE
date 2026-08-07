@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-/** Signs a JWT containing the user's id, email, and role. */
 const signToken = (user) =>
   jwt.sign(
     { id: user.id, email: user.email, role: user.role },
@@ -11,19 +10,18 @@ const signToken = (user) =>
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 
-/// POST /auth/register
+
 
 const register = async (req, res) => {
   const { name, email, password, phone, address, branch_id, role, role_secret } = req.body;
 
-  // Validate role value
-  const allowedRoles = ['customer', 'admin', 'pharmacist'];
+
+  const allowedRoles = ['customer', 'admin', 'pharmacist', 'delivery_partner'];
   const selectedRole = (role || 'customer').toLowerCase();
 
   if (!allowedRoles.includes(selectedRole))
     return res.status(400).json({ success: false, message: 'Invalid role selected.' });
 
-  // For admin/pharmacist, verify the role secret before proceeding
   if (selectedRole === 'admin') {
     if (!role_secret || role_secret !== process.env.ADMIN_SECRET)
       return res.status(403).json({ success: false, message: 'Invalid admin registration secret.' });
@@ -33,6 +31,8 @@ const register = async (req, res) => {
     if (!role_secret || role_secret !== process.env.PHARMACIST_SECRET)
       return res.status(403).json({ success: false, message: 'Invalid pharmacist registration secret.' });
   }
+
+ 
 
   try {
     const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
@@ -76,8 +76,6 @@ const register = async (req, res) => {
   }
 };
 
-// POST /auth/login
-
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -106,7 +104,6 @@ const login = async (req, res) => {
   }
 };
 
-// GET /auth/profile
 
 const getProfile = async (req, res) => {
   try {

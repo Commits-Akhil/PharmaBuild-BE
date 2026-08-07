@@ -13,7 +13,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve uploaded prescription images statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
@@ -27,6 +26,7 @@ app.use('/medicines', require('./APIs/Medicines/routes'));
 
 app.use('/customer', require('./APIs/Customer/routes'));
 
+
 app.use('/orders', require('./APIs/placeorder/routes'));
 
 
@@ -39,6 +39,8 @@ app.use("/orders", orderRoutes);
 const adminRoutes = require("./APIs/Admin/routes");
 
 app.use("/admin", adminRoutes);
+
+app.use("/delivery", require("./APIs/Delivery/routes"));
 
 const PORT = process.env.PORT || 5000;
 
