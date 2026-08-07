@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const app = express();
 
-// CORS — allow Next.js frontend (port 3000) to call this API
+
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URL || "http://localhost:3000");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -13,7 +13,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve uploaded prescription images statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
@@ -27,10 +26,10 @@ app.use('/medicines', require('./APIs/Medicines/routes'));
 
 app.use('/customer', require('./APIs/Customer/routes'));
 
-// FIX: placeorder routes must be mounted under /orders so POST /orders/place works
+
 app.use('/orders', require('./APIs/placeorder/routes'));
 
-// FIX: prescriptions route was never mounted
+
 app.use('/prescriptions', require('./APIs/Prescriptions/routes'));
 
 app.use("/pharmacist", pharmacistRoutes);

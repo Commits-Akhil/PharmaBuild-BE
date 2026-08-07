@@ -2,7 +2,9 @@ const pool = require("../../config");
 
 /**
  * GET /delivery/orders/available
- * Lists all orders that are ready for pickup (status = 'ready_for_pickup') and unclaimed.
+ * Lists all orders ready for delivery and unclaimed:
+ *   - 'Verified'  → prescription orders approved by pharmacist
+ *   - 'Placed'    → OTC orders (no prescription required)
  * Returns branch pickup address and customer delivery address.
  */
 const getAvailableOrders = async (req, res) => {
@@ -11,6 +13,7 @@ const getAvailableOrders = async (req, res) => {
             SELECT
                 o.id                    AS order_id,
                 o.status,
+                o.requires_prescription AS requires_prescription,
                 o.created_at,
                 -- Branch (pickup) info
                 b.id                    AS branch_id,
@@ -23,7 +26,7 @@ const getAvailableOrders = async (req, res) => {
             FROM orders o
             JOIN branches b ON b.id = o.branch_id
             JOIN users    u ON u.id = o.customer_id
-            WHERE o.status = 'ready_for_pickup'
+            WHERE o.status IN ('Verified', 'Placed')
               AND o.delivery_partner_id IS NULL
             ORDER BY o.created_at ASC
         `);
@@ -72,7 +75,7 @@ const claimOrder = async (req, res) => {
 
         const order = lock.rows[0];
 
-        if (order.status !== "ready_for_pickup") {
+        if (!["Verified", "Placed"].includes(order.status)) {
             await client.query("ROLLBACK");
             return res.status(400).json({
                 success: false,
@@ -91,7 +94,7 @@ const claimOrder = async (req, res) => {
         // Claim it
         const updated = await client.query(
             `UPDATE orders
-             SET status              = 'out_for_delivery',
+             SET status              = 'Out for Delivery',
                  delivery_partner_id = $1,
                  updated_at          = NOW()
              WHERE id = $2
@@ -163,11 +166,11 @@ const markDelivered = async (req, res) => {
     try {
         const result = await pool.query(
             `UPDATE orders
-             SET status     = 'delivered',
+             SET status     = 'Delivered',
                  updated_at = NOW()
              WHERE id = $1
                AND delivery_partner_id = $2
-               AND status = 'out_for_delivery'
+               AND status = 'Out for Delivery'
              RETURNING id, status, updated_at`,
             [orderId, deliveryPartnerId]
         );
